@@ -1,0 +1,47 @@
+[
+  {
+    "folderName": "customers",
+    "fileName": "olist_customers_dataset.csv",
+    "targetFolder": "customers"
+  },
+  {
+    "folderName": "orders",
+    "fileName": "olist_orders_dataset.csv",
+    "targetFolder": "orders"
+  },
+  {
+    "folderName": "order_items",
+    "fileName": "olist_order_items_dataset.csv",
+    "targetFolder": "order_items"
+  },
+  {
+    "folderName": "payments",
+    "fileName": "olist_order_payments_dataset.csv",
+    "targetFolder": "payments"
+  },
+  {
+    "folderName": "products",
+    "fileName": "olist_products_dataset.csv",
+    "targetFolder": "products"
+  },
+  {
+    "folderName": "reviews",
+    "fileName": "olist_order_reviews_dataset.csv",
+    "targetFolder": "reviews"
+  },
+  {
+    "folderName": "sellers",
+    "fileName": "olist_sellers_dataset.csv",
+    "targetFolder": "sellers"
+  },
+  {
+    "folderName": "geolocation",
+    "fileName": "olist_geolocation_dataset.csv",
+    "targetFolder": "geolocation"
+  },
+  {
+    "folderName": "category_translation",
+    "fileName": "product_category_name_translation.csv",
+    "targetFolder": "category_translation"
+  }
+]
