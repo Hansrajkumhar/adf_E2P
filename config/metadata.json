@@ -1,47 +1,119 @@
 [
   {
+    "sourceType": "GitHub",
     "folderName": "customers",
     "fileName": "olist_customers_dataset.csv",
-    "targetFolder": "customers"
+    "sinkContainer": "rawdata",
+    "sinkFolder": "customers",
+    "fileType": "DelimitedText",
+    "delimiter": ",",
+    "header": true,
+    "active": true,
+    "loadType": "Full",
+    "checkDuplicate": true
   },
   {
+    "sourceType": "GitHub",
     "folderName": "orders",
     "fileName": "olist_orders_dataset.csv",
-    "targetFolder": "orders"
+    "sinkContainer": "rawdata",
+    "sinkFolder": "orders",
+    "fileType": "DelimitedText",
+    "delimiter": ",",
+    "header": true,
+    "active": true,
+    "loadType": "Full",
+    "checkDuplicate": true
   },
   {
+    "sourceType": "GitHub",
     "folderName": "order_items",
     "fileName": "olist_order_items_dataset.csv",
-    "targetFolder": "order_items"
+    "sinkContainer": "rawdata",
+    "sinkFolder": "order_items",
+    "fileType": "DelimitedText",
+    "delimiter": ",",
+    "header": true,
+    "active": true,
+    "loadType": "Full",
+    "checkDuplicate": true
   },
   {
+    "sourceType": "GitHub",
     "folderName": "payments",
     "fileName": "olist_order_payments_dataset.csv",
-    "targetFolder": "payments"
+    "sinkContainer": "rawdata",
+    "sinkFolder": "payments",
+    "fileType": "DelimitedText",
+    "delimiter": ",",
+    "header": true,
+    "active": true,
+    "loadType": "Full",
+    "checkDuplicate": true
   },
   {
+    "sourceType": "GitHub",
     "folderName": "products",
     "fileName": "olist_products_dataset.csv",
-    "targetFolder": "products"
+    "sinkContainer": "rawdata",
+    "sinkFolder": "products",
+    "fileType": "DelimitedText",
+    "delimiter": ",",
+    "header": true,
+    "active": true,
+    "loadType": "Full",
+    "checkDuplicate": true
   },
   {
+    "sourceType": "GitHub",
     "folderName": "reviews",
     "fileName": "olist_order_reviews_dataset.csv",
-    "targetFolder": "reviews"
+    "sinkContainer": "rawdata",
+    "sinkFolder": "reviews",
+    "fileType": "DelimitedText",
+    "delimiter": ",",
+    "header": true,
+    "active": true,
+    "loadType": "Full",
+    "checkDuplicate": true
   },
   {
+    "sourceType": "GitHub",
     "folderName": "sellers",
     "fileName": "olist_sellers_dataset.csv",
-    "targetFolder": "sellers"
+    "sinkContainer": "rawdata",
+    "sinkFolder": "sellers",
+    "fileType": "DelimitedText",
+    "delimiter": ",",
+    "header": true,
+    "active": true,
+    "loadType": "Full",
+    "checkDuplicate": true
   },
   {
+    "sourceType": "GitHub",
     "folderName": "geolocation",
     "fileName": "olist_geolocation_dataset.csv",
-    "targetFolder": "geolocation"
+    "sinkContainer": "rawdata",
+    "sinkFolder": "geolocation",
+    "fileType": "DelimitedText",
+    "delimiter": ",",
+    "header": true,
+    "active": true,
+    "loadType": "Full",
+    "checkDuplicate": true
   },
   {
+    "sourceType": "GitHub",
     "folderName": "category_translation",
     "fileName": "product_category_name_translation.csv",
-    "targetFolder": "category_translation"
+    "sinkContainer": "rawdata",
+    "sinkFolder": "category_translation",
+    "fileType": "DelimitedText",
+    "delimiter": ",",
+    "header": true,
+    "active": true,
+    "loadType": "Full",
+    "checkDuplicate": true
   }
 ]
