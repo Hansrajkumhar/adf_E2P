@@ -8,7 +8,7 @@
     "fileType": "DelimitedText",
     "delimiter": ",",
     "header": true,
-    "active": true,
+    "isActive": true,
     "loadType": "Full",
     "checkDuplicate": true
   },
@@ -21,7 +21,7 @@
     "fileType": "DelimitedText",
     "delimiter": ",",
     "header": true,
-    "active": true,
+    "isActive": true,
     "loadType": "Full",
     "checkDuplicate": true
   },
@@ -34,7 +34,7 @@
     "fileType": "DelimitedText",
     "delimiter": ",",
     "header": true,
-    "active": true,
+    "isActive": true,
     "loadType": "Full",
     "checkDuplicate": true
   },
@@ -47,7 +47,7 @@
     "fileType": "DelimitedText",
     "delimiter": ",",
     "header": true,
-    "active": true,
+    "isActive": true,
     "loadType": "Full",
     "checkDuplicate": true
   },
@@ -60,7 +60,7 @@
     "fileType": "DelimitedText",
     "delimiter": ",",
     "header": true,
-    "active": true,
+    "isActive": true,
     "loadType": "Full",
     "checkDuplicate": true
   },
@@ -73,7 +73,7 @@
     "fileType": "DelimitedText",
     "delimiter": ",",
     "header": true,
-    "active": true,
+    "isActive": true,
     "loadType": "Full",
     "checkDuplicate": true
   },
@@ -86,7 +86,7 @@
     "fileType": "DelimitedText",
     "delimiter": ",",
     "header": true,
-    "active": true,
+    "isActive": true,
     "loadType": "Full",
     "checkDuplicate": true
   },
@@ -99,7 +99,7 @@
     "fileType": "DelimitedText",
     "delimiter": ",",
     "header": true,
-    "active": true,
+    "isActive": true,
     "loadType": "Full",
     "checkDuplicate": true
   },
@@ -112,7 +112,7 @@
     "fileType": "DelimitedText",
     "delimiter": ",",
     "header": true,
-    "active": true,
+    "isActive": true,
     "loadType": "Full",
     "checkDuplicate": true
   }
