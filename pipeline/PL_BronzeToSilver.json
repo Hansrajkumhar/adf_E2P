@@ -1,0 +1,200 @@
+{
+	"name": "PL_BronzeToSilver",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup_Config",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT *\nFROM PipelineConfig\nWHERE IsActive = 1",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_SQL_Config",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup_Config",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup_Config').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "03_Bronze_to_Silver",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/hansraj.prajapat1995@gmail.com/newadbforadfsWorkSpace/03_Bronze_to_Silver",
+								"baseParameters": {
+									"bronzeSchema": "bronze",
+									"catalog": "dev_catalog",
+									"silverSchema": "silver",
+									"tableName": {
+										"value": "@item().FolderName",
+										"type": "Expression"
+									},
+									"pipelineRunId": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricks1",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Insert_Pipeline_Audit",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "03_Bronze_to_Silver",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[usp_InsertUpdatedPipelineAudit]",
+								"storedProcedureParameters": {
+									"DuplicatesRemoved": {
+										"value": {
+											"value": "@activity('03_Bronze_to_Silver').output.runOutput.duplicatesRemoved",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"EndTime": {
+										"value": {
+											"value": "@utcNow()",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"ErrorMessage": {
+										"value": "",
+										"type": "String"
+									},
+									"FileName": {
+										"value": {
+											"value": "@item().FileName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"FolderName": {
+										"value": {
+											"value": "@item().FolderName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"Layer": {
+										"value": {
+											"value": "@activity('03_Bronze_to_Silver').output.runOutput.layer",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"NullsHandled": {
+										"value": {
+											"value": "@activity('03_Bronze_to_Silver').output.runOutput.nullsRemoved",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"PipelineName": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"PipelineRunId": {
+										"value": {
+											"value": "@pipeline().RunId",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"RowsProcessed": {
+										"value": {
+											"value": "@activity('03_Bronze_to_Silver').output.runOutput.rowsWritten",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"StartTime": {
+										"value": {
+											"value": "@pipeline().TriggerTime",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"Status": {
+										"value": {
+											"value": "@activity('03_Bronze_to_Silver').output.runOutput.status",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LS_SQLDB",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2026-07-14T17:52:24Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

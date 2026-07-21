@@ -1,0 +1,436 @@
+{
+	"name": "PL_Raw_Ingestion",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup_Metadata",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Metadata",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup_Metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup_Metadata').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Lookup inside ForEach",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": {
+										"value": "@concat('SELECT * FROM PipelineConfig \nWHERE FolderName = ''', item().FolderName, ''' \nAND FileName = ''', item().FileName,\n''''\n)",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "DS_SQL_Config",
+									"type": "DatasetReference"
+								},
+								"firstRowOnly": false
+							}
+						},
+						{
+							"name": "True Condition",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "Lookup inside ForEach",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@equals(activity('Lookup inside ForEach').output.count,0)",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Stored procedure1",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[usp_UpdatePipelineConfig]",
+											"storedProcedureParameters": {
+												"FileName": {
+													"value": {
+														"value": "@item().fileName",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"FolderName": {
+													"value": {
+														"value": "@item().folderName",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"IsActive": {
+													"value": {
+														"value": "@item().isActive",
+														"type": "Expression"
+													},
+													"type": "Boolean"
+												},
+												"LoadType": {
+													"value": {
+														"value": "@item().loadType",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"SinkContainer": {
+													"value": {
+														"value": "@item().sinkContainer",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"SinkFolder": {
+													"value": {
+														"value": "@item().sinkFolder",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"SourceType": {
+													"value": {
+														"value": "@item().sourceType",
+														"type": "Expression"
+													},
+													"type": "String"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "LS_SQLDB",
+											"type": "LinkedServiceReference"
+										}
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "usp_InsertPipelineConfig",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[usp_InsertPipelineConfig]",
+											"storedProcedureParameters": {
+												"FileName": {
+													"value": {
+														"value": "@item().fileName",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"FolderName": {
+													"value": {
+														"value": "@item().folderName",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"IsActive": {
+													"value": {
+														"value": "@item().isActive",
+														"type": "Expression"
+													},
+													"type": "Boolean"
+												},
+												"LoadType": {
+													"value": {
+														"value": "@item().loadType",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"SinkContainer": {
+													"value": {
+														"value": "@item().sinkContainer",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"SinkFolder": {
+													"value": {
+														"value": "@item().sinkFolder",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"SourceType": {
+													"value": {
+														"value": "@item().sourceType",
+														"type": "Expression"
+													},
+													"type": "String"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "LS_SQLDB",
+											"type": "LinkedServiceReference"
+										}
+									},
+									{
+										"name": "PipelineConfigHistory",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [
+											{
+												"activity": "usp_InsertPipelineConfig",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[usp_InsertPipelineConfigHistory]",
+											"storedProcedureParameters": {
+												"ChangeType": {
+													"value": "'INSERT'",
+													"type": "String"
+												},
+												"ConfigId": {
+													"value": {
+														"value": "@item().configId",
+														"type": "Expression"
+													},
+													"type": "Int32"
+												},
+												"FileName": {
+													"value": {
+														"value": "@item().fileName",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"FolderName": {
+													"value": {
+														"value": "@item().folderName",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"IsActive": {
+													"value": {
+														"value": "@item().isActive",
+														"type": "Expression"
+													},
+													"type": "Boolean"
+												},
+												"LoadType": {
+													"value": {
+														"value": "@item().loadType",
+														"type": "Expression"
+													},
+													"type": "String"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "LS_SQLDB",
+											"type": "LinkedServiceReference"
+										}
+									}
+								]
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Lookup_Config",
+				"type": "Lookup",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT *\nFROM PipelineConfig\nWHERE IsActive = 1\nORDER BY Id;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_SQL_Config",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach2",
+				"type": "ForEach",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup_Config').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_GitHub_HTTP",
+									"type": "DatasetReference",
+									"parameters": {
+										"FolderName": {
+											"value": "@item().FolderName",
+											"type": "Expression"
+										},
+										"FileName": {
+											"value": "@item().FileName",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DelimitedText1",
+									"type": "DatasetReference"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2026-07-14T17:52:24Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

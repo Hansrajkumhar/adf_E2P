@@ -1,0 +1,497 @@
+{
+	"name": "PL_RawData_to_Bronze",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup_Config",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT *\nFROM PipelineConfig\nWHERE IsActive = 1\nORDER BY Id;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_SQL_Config",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach_Config",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup_Config",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup_Config').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Lookup_Watermark",
+							"type": "Lookup",
+							"dependsOn": [
+								{
+									"activity": "Notebook1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": {
+										"value": "@concat(\n'SELECT * FROM Watermark WHERE FolderName = ''',\nitem().FolderName,\n''' AND FileName = ''',\nitem().FileName,\n''''\n)",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "DS_SQL_Config",
+									"type": "DatasetReference"
+								},
+								"firstRowOnly": false
+							}
+						},
+						{
+							"name": "True Condition_copy1",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "Lookup_Watermark",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@equals(activity('Lookup_Watermark').output.count,0)",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Stored procedure1_copy1",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[usp_UpdatePipelineConfig]",
+											"storedProcedureParameters": {
+												"FileName": {
+													"value": {
+														"value": "@item().fileName",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"FolderName": {
+													"value": {
+														"value": "@item().folderName",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"IsActive": {
+													"value": {
+														"value": "@item().isActive",
+														"type": "Expression"
+													},
+													"type": "Boolean"
+												},
+												"LoadType": {
+													"value": {
+														"value": "@item().loadType",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"SinkContainer": {
+													"value": {
+														"value": "@item().sinkContainer",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"SinkFolder": {
+													"value": {
+														"value": "@item().sinkFolder",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"SourceType": {
+													"value": {
+														"value": "@item().sourceType",
+														"type": "Expression"
+													},
+													"type": "String"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "LS_SQLDB",
+											"type": "LinkedServiceReference"
+										}
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "update_watermark",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [
+											{
+												"activity": "Raw_to_Bronze",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[usp_UpdateWatermark]",
+											"storedProcedureParameters": {
+												"FileHash": {
+													"value": {
+														"value": "@activity('Raw_to_Bronze').output.runOutput.fileHash",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"FileName": {
+													"value": {
+														"value": "@activity('Raw_to_Bronze').output.runOutput.fileName",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"FolderName": {
+													"value": {
+														"value": "@activity('Raw_to_Bronze').output.runOutput.folderName",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"LastModified": {
+													"value": {
+														"value": "@activity('Raw_to_Bronze').output.runOutput.lastModified",
+														"type": "Expression"
+													},
+													"type": "DateTime"
+												},
+												"PipelineRunId": {
+													"value": {
+														"value": "@activity('Raw_to_Bronze').output.runOutput.pipelineRunId",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"Status": {
+													"value": {
+														"value": "@activity('Raw_to_Bronze').output.runOutput.status",
+														"type": "Expression"
+													},
+													"type": "String"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "LS_SQLDB",
+											"type": "LinkedServiceReference"
+										}
+									},
+									{
+										"name": "PipelineConfigHistory_copy1",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [
+											{
+												"activity": "update_watermark",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[usp_InsertPipelineAudit]",
+											"storedProcedureParameters": {
+												"EndTime": {
+													"value": {
+														"value": "@utcNow()",
+														"type": "Expression"
+													},
+													"type": "DateTime"
+												},
+												"ErrorMessage": {
+													"value": "",
+													"type": "String"
+												},
+												"FileName": {
+													"value": {
+														"value": "@item().FileName",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"FolderName": {
+													"value": {
+														"value": "@item().FolderName",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"PipelineName": {
+													"value": {
+														"value": "@pipeline().Pipeline",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"PipelineRunId": {
+													"value": {
+														"value": "@pipeline().RunId",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"RowsProcessed": {
+													"value": {
+														"value": "@activity('Raw_to_Bronze').output.runOutput.rowsWritten",
+														"type": "Expression"
+													},
+													"type": "Int32"
+												},
+												"StartTime": {
+													"value": {
+														"value": "@pipeline().TriggerTime",
+														"type": "Expression"
+													},
+													"type": "DateTime"
+												},
+												"Status": {
+													"value": {
+														"value": "@activity('Raw_to_Bronze').output.runOutput.status",
+														"type": "Expression"
+													},
+													"type": "String"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "LS_SQLDB",
+											"type": "LinkedServiceReference"
+										}
+									},
+									{
+										"name": "Raw_to_Bronze",
+										"type": "DatabricksNotebook",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"notebookPath": "/Users/hansraj.prajapat1995@gmail.com/newadbforadfsWorkSpace/Notebook02_Raw_to_Bronze",
+											"baseParameters": {
+												"catalog": {
+													"value": "dev_catalog",
+													"type": "Expression"
+												},
+												"schema": {
+													"value": "bronze",
+													"type": "Expression"
+												},
+												"container": {
+													"value": "@item().SinkContainer",
+													"type": "Expression"
+												},
+												"folder": {
+													"value": "@item().FolderName",
+													"type": "Expression"
+												},
+												"file": {
+													"value": "@item().FileName",
+													"type": "Expression"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "AzureDatabricks1",
+											"type": "LinkedServiceReference"
+										}
+									}
+								]
+							}
+						},
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_GitHub_HTTP",
+									"type": "DatasetReference",
+									"parameters": {
+										"FolderName": {
+											"value": "@item().FolderName",
+											"type": "Expression"
+										},
+										"FileName": {
+											"value": "@item().FileName",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DelimitedText1",
+									"type": "DatasetReference"
+								}
+							]
+						},
+						{
+							"name": "Notebook1",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "Copy data1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/hansraj.prajapat1995@gmail.com/newadbforadfsWorkSpace/01_FileValidation",
+								"baseParameters": {
+									"container": {
+										"value": "@item().SinkContainer",
+										"type": "Expression"
+									},
+									"folder": {
+										"value": "@item().SinkFolder",
+										"type": "Expression"
+									},
+									"file": {
+										"value": "@item().FileName",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricks1",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2026-07-14T17:52:23Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

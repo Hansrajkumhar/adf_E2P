@@ -1,0 +1,14 @@
+{
+	"name": "AzureDatabricks1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"domain": "https://adb-7405609506378413.13.azuredatabricks.net",
+			"authentication": "MSI",
+			"workspaceResourceId": "/subscriptions/07b1dd26-469c-4236-a2bb-7c2483edce01/resourceGroups/ADFS_Resource/providers/Microsoft.Databricks/workspaces/newadbforadfs",
+			"existingClusterId": "0709-121916-81cxdrcb"
+		}
+	}
+}

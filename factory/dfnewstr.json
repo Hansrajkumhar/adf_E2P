@@ -1,0 +1,15 @@
+{
+	"name": "dfnewstr",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "southeastasia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "137f7dd6-29d3-420b-a9ac-e740aafb4813",
+		"tenantId": "9b8a90ce-6afd-4ddd-9eae-15255f057683"
+	}
+}
