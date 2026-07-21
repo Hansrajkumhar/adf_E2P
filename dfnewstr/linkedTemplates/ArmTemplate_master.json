@@ -1,0 +1,140 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dfnewstr"
+		},
+		"ADLSGen2_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ADLSGen2'"
+		},
+		"HttpServer1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'HttpServer1'"
+		},
+		"LS_SQLDB_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_SQLDB'"
+		},
+		"New_LS_AuditInsert_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'New_LS_AuditInsert'"
+		},
+		"ADLSGen2_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adftorage.dfs.core.windows.net/"
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0709-121916-81cxdrcb"
+		},
+		"HttpServer1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
+		},
+		"HttpServer1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "HansrajKumhar"
+		},
+		"LS_SQLDB_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "olistbraziliands.database.windows.net"
+		},
+		"LS_SQLDB_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "OlistBrazilianDS"
+		},
+		"LS_SQLDB_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "Admin@"
+		},
+		"New_LS_AuditInsert_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "olistbraziliands.database.windows.net"
+		},
+		"New_LS_AuditInsert_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "OlistBrazilianDS"
+		},
+		"New_LS_AuditInsert_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "Admin@"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "dfnewstr_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"ADLSGen2_accountKey": {
+						"value": "[parameters('ADLSGen2_accountKey')]"
+					},
+					"HttpServer1_password": {
+						"value": "[parameters('HttpServer1_password')]"
+					},
+					"LS_SQLDB_password": {
+						"value": "[parameters('LS_SQLDB_password')]"
+					},
+					"New_LS_AuditInsert_password": {
+						"value": "[parameters('New_LS_AuditInsert_password')]"
+					},
+					"ADLSGen2_properties_typeProperties_url": {
+						"value": "[parameters('ADLSGen2_properties_typeProperties_url')]"
+					},
+					"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('AzureDatabricks1_properties_typeProperties_existingClusterId')]"
+					},
+					"HttpServer1_properties_typeProperties_url": {
+						"value": "[parameters('HttpServer1_properties_typeProperties_url')]"
+					},
+					"HttpServer1_properties_typeProperties_userName": {
+						"value": "[parameters('HttpServer1_properties_typeProperties_userName')]"
+					},
+					"LS_SQLDB_properties_typeProperties_server": {
+						"value": "[parameters('LS_SQLDB_properties_typeProperties_server')]"
+					},
+					"LS_SQLDB_properties_typeProperties_database": {
+						"value": "[parameters('LS_SQLDB_properties_typeProperties_database')]"
+					},
+					"LS_SQLDB_properties_typeProperties_userName": {
+						"value": "[parameters('LS_SQLDB_properties_typeProperties_userName')]"
+					},
+					"New_LS_AuditInsert_properties_typeProperties_server": {
+						"value": "[parameters('New_LS_AuditInsert_properties_typeProperties_server')]"
+					},
+					"New_LS_AuditInsert_properties_typeProperties_database": {
+						"value": "[parameters('New_LS_AuditInsert_properties_typeProperties_database')]"
+					},
+					"New_LS_AuditInsert_properties_typeProperties_userName": {
+						"value": "[parameters('New_LS_AuditInsert_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

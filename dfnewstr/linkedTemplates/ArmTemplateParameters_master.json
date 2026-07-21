@@ -1,0 +1,57 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "dfnewstr"
+		},
+		"ADLSGen2_accountKey": {
+			"value": ""
+		},
+		"HttpServer1_password": {
+			"value": ""
+		},
+		"LS_SQLDB_password": {
+			"value": ""
+		},
+		"New_LS_AuditInsert_password": {
+			"value": ""
+		},
+		"ADLSGen2_properties_typeProperties_url": {
+			"value": "https://adftorage.dfs.core.windows.net/"
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"value": "0709-121916-81cxdrcb"
+		},
+		"HttpServer1_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
+		"HttpServer1_properties_typeProperties_userName": {
+			"value": "HansrajKumhar"
+		},
+		"LS_SQLDB_properties_typeProperties_server": {
+			"value": "olistbraziliands.database.windows.net"
+		},
+		"LS_SQLDB_properties_typeProperties_database": {
+			"value": "OlistBrazilianDS"
+		},
+		"LS_SQLDB_properties_typeProperties_userName": {
+			"value": "Admin@"
+		},
+		"New_LS_AuditInsert_properties_typeProperties_server": {
+			"value": "olistbraziliands.database.windows.net"
+		},
+		"New_LS_AuditInsert_properties_typeProperties_database": {
+			"value": "OlistBrazilianDS"
+		},
+		"New_LS_AuditInsert_properties_typeProperties_userName": {
+			"value": "Admin@"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
